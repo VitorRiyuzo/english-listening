@@ -33,9 +33,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen name="Result" component={Result} />
         <Stack.Screen name="Level" component={Levels} />
         <Stack.Screen name="Game" component={Game} />
-        <Stack.Screen name="Result" component={Result} />
       </Stack.Navigator>
     </NavigationContainer>
   );
