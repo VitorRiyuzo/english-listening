@@ -9,6 +9,7 @@ import Result from "./src/pages/Result";
 import * as Font from "expo-font";
 import { useState } from 'react';
 import { AppLoading } from 'expo';
+import AppProvider from './src/context/app';
 const Stack = createStackNavigator();
 if (__DEV__) {
   require('react-devtools');
@@ -19,11 +20,6 @@ const fetchFonts = () =>{
   });
 }
 export default function App() {
-  //useEffect(() => {
-    // Font.loadAsync({
-    //   "eras-bold": require("./src/assets/fonts/ERASBD.ttf"),
-    // });
-  //})
   const [dataLoaded, setDataLoaded] = useState(false);
   if(!dataLoaded){
     return(
@@ -31,20 +27,14 @@ export default function App() {
     )
   } 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Result" component={Result} />
-        <Stack.Screen name="Level" component={Levels} />
-        <Stack.Screen name="Game" component={Game} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AppProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Level">
+          <Stack.Screen name="Level" options={{ headerShown: false}} component={Levels} />
+          <Stack.Screen name="Game" options={{ headerShown: false}} component={Game} />
+          <Stack.Screen name="Result" options={{ headerShown: false}} component={Result} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AppProvider>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

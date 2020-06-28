@@ -15,6 +15,7 @@ export const Text = styled.Text`
   color:${props => props.color ? props.color : 'white'};
   font-size:${props => props.fS? `${props.fS}px` : '22px'};
   font-family:'eras-bold';
+  text-align:${props => props.tA ? props.tA:'left'};
 `;
 export const Background = styled.ImageBackground`
     /* width: 100%; */

@@ -1,48 +1,84 @@
-import React,{useState, useEffect} from "react";
+import React,{useState, useEffect, useContext} from "react";
 //import { Text } from "react-native";
 import { Text, Box,Button, Background} from "../../styles/global";
-import {Container, Level} from "./styles";
-import {Switch} from 'react-native';
+import {Container, Level,Logo, Img, Timer} from "./styles";
+import {AppContext} from "../../context/app";
+import {Switch, Alert} from "react-native";
 export default function Levels({ navigation }) {
-    // useEffect(()=>{
-    //   Font.loadAsync({
-    //     "eras-bold": require("../../assets/fonts/ERASBD.ttf"),
-    //   });
-    // })
-    const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const context = useContext(AppContext);
+    const [level, setLevel] = useState({easy:false,medium:false,hard:false});
+    const[isLevel, setIslevel] = useState(false);
+    const [timer, setTimer] = useState(null);
+
+    const toggleSwitch = (n) => {
+      let newLevel = {easy: false, medium: false, hard: false};
+      newLevel[n] = true;
+      context.saveApp({level:n});
+      setLevel(newLevel);
+      setIslevel(true);
+    }
+    const start = ()=>{
+      if(isLevel){
+        let timer = 3
+        setTimer(timer.toString());
+        let time = setInterval(() => {
+          timer = timer-1;
+          setTimer(timer.toString());
+          if(timer == 0){
+            clearInterval(time);
+            navigation.navigate('Game');
+          }
+        }, 1000);
+      }else{
+          Alert.alert(
+            "Selecione um nível",
+            "Você precisa escolher um nível",
+            [
+              { text: "OK", onPress: () => {}}
+            ],
+            { cancelable: false }
+          );
+      }
+    }
     return (
       <Background resizeMode="cover" source={require("../../assets/img/bg.png")}>
         <Container>
+          {timer && <Timer>
+            <Text fS={35} tA={'center'}>O JOGO COMEÇARÁ EM:</Text>
+          <Text fS={35}>{timer}</Text>
+          </Timer> }
+          <Logo>
+            <Img resizeMode="contain" source={require('../../assets/img/logo.png')}></Img>
+          </Logo>
           <Box mT={50} mB={50}>
             <Text fS={30}>NÍVEL</Text>
           </Box>
           <Level>
             <Switch trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={isEnabled ? "#81b0ff" : "#f4f3f4"}
+              thumbColor={level.easy ? "#81b0ff" : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleSwitch}
-              value={isEnabled}></Switch>
-              <Text>FÁCIL</Text>
+              onValueChange={()=>{toggleSwitch('easy')}}
+              value={level.easy}></Switch>
+            <Text fS={12}>FÁCIL (1/100)</Text>
           </Level>
           <Level>
             <Switch trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={isEnabled ? "#81b0ff" : "#f4f3f4"}
+              thumbColor={level.medium ? "#81b0ff" : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleSwitch}
-              value={isEnabled}></Switch>
-            <Text>MÉDIO</Text>
+              onValueChange={()=>{toggleSwitch('medium')}}
+              value={level.medium}></Switch>
+            <Text fS={12}>MÉDIO (100/1.000)</Text>
           </Level>
           <Level>
             <Switch trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={isEnabled ? "#81b0ff" : "#f4f3f4"}
+              thumbColor={level.hard ? "#81b0ff" : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleSwitch}
-              value={isEnabled}></Switch>
-            <Text>DIFÍCIL</Text>
+              onValueChange={()=>{toggleSwitch('hard')}}
+              value={level.hard}></Switch>
+            <Text fS={12}>DIFÍCIL (1.000/100.000)</Text>
           </Level>
         <Box mT={50}>
-          <Button.Primary onPress={() => navigation.navigate("Game")}>
+          <Button.Primary onPress={() =>{start()}}>
             <Text>COMEÇAR</Text>
           </Button.Primary>
         </Box>
