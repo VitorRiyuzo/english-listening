@@ -29,7 +29,7 @@ export const Key = styled.View`
     height:50%;
     justify-content:space-around;
 `;
-export const ButtonKey = styled.View`
+export const ButtonKey = styled.TouchableOpacity`
     background:${props => props.color ? props.color :'#bec0c2'};
     padding:10px;
     border-radius:7px;

@@ -4,8 +4,10 @@ import { Text, Box,Button, Background} from "../../styles/global";
 import {Container, Level,Logo, Img, Timer} from "./styles";
 import {AppContext} from "../../context/app";
 import {Switch, Alert} from "react-native";
+import { getNumbers, setLevelFire } from "./services";
 export default function Levels({ navigation }) {
     const context = useContext(AppContext);
+    console.log(context);
     const [level, setLevel] = useState({easy:false,medium:false,hard:false});
     const[isLevel, setIslevel] = useState(false);
     const [timer, setTimer] = useState(null);
@@ -17,18 +19,36 @@ export default function Levels({ navigation }) {
       setLevel(newLevel);
       setIslevel(true);
     }
+    const startTimer = ()=>{
+      let timer = 3;
+      let time = setInterval(() => {
+        timer = timer - 1;
+        setTimer(timer.toString());
+        if (timer == 0) {
+          clearInterval(time);
+          navigation.navigate("Game");
+        }
+      }, 1000);
+    }
     const start = ()=>{
       if(isLevel){
-        let timer = 3
-        setTimer(timer.toString());
-        let time = setInterval(() => {
-          timer = timer-1;
-          setTimer(timer.toString());
-          if(timer == 0){
-            clearInterval(time);
-            navigation.navigate('Game');
+        let level = context.app.level;
+        console.log("level",level);
+        setTimer(3);
+        if(level){
+          if (context.app[level]){
+            startTimer();
+          }else{
+            getNumbers(level).then((resp) => {
+              console.log(resp);
+              let newContext = {};
+              newContext[level] = resp;
+              context.saveApp(newContext);
+              startTimer();
+              console.log(context);
+            });
           }
-        }, 1000);
+        }
       }else{
           Alert.alert(
             "Selecione um nível",
