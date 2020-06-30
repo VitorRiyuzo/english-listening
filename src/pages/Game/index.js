@@ -1,4 +1,4 @@
-import React,{useContext, useState, useEffect} from "react";
+import React,{useContext, useState, useEffect, useRef} from "react";
 import {TouchableOpacity} from "react-native";
 import { Text, Box, Button, Background } from "../../styles/global";
 import {Container, Top, Number, Key, ButtonKey, Row} from "./styles";
@@ -7,100 +7,114 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppContext } from '../../context/app';
 
 import {service} from "./services";
-export default function Game({navigation}) {
-  let context = useContext(AppContext);
+export default function Game({route, navigation}) {
+  let params = route.params;
+  navigation.addListener('didFocus', () => console.log('x'))
   console.log("Game.js");
-  console.log("context",context);
-  let roundVal = 1;
-  const[time, setTime] = useState(5);
-  const[round, setRound] = useState(roundVal);
+  let context = useContext(AppContext);
+  const timeValue = useRef(10);
+  const roundValue = useRef(1);
+  const[time, setTime] = useState(10);
+  const[round, setRound] = useState(1);
   const[answer, setAnswer] = useState('');
-  const[sendAnswer, setSendAnswer] = useState(false);
   const level = context.app.level;
-  let rounds = [];
-  let number = null;
-  let numbers = [];
+  const results = useRef(null);
+  const number = useRef(null);
+  const numbers = useRef(null);
+  const finish = useRef(false);
+  console.log("params", params);
+  if(!params){
+    params = {};
+  }
+  if (params.update) {
+    console.log("results", results);
+    console.log("number", number);
+    console.log("finish", finish);
+    console.log("numbers", numbers);
+    console.log("round", round);
+    console.log("time", time);
+    console.log("roundValue", roundValue);
+    console.log("timeValue", timeValue);
+  }
   const digit = (value)=>{
     if(value == 'back'){
-        console.log(answer);
         let number = answer.slice(0, -1);
         setAnswer(number);
     }else{
-      console.log(answer);
       let number = answer + value;
       setAnswer(number);
     }
   }
   const play = () =>{
-    console.log("play");
-    console.log(number)
-    service.playNumber(number);
+    service.playNumber(number.current);
   }
   const send = ()=>{
-    setSendAnswer(true);
-    setTime(5);
-    nextRound();
+    updateResult(true);
   }
   const getNumber = ()=>{
-    console.log("getNumber");
-    console.log("context", context);
-    console.log("numbers", numbers);
-    service.getNumber(numbers, context.app[level]).then((resp)=>{
-      number = resp;
+    service.getNumber(numbers.current, context.app[level]).then((resp)=>{
+      number.current = resp;
       play();
-      setTimeout(() => {
-        startTimer();
-      }, 2000);
+      timeValue.current = 10;
+      setTime(10);
     });
   }
   const startTimer = () =>{
-    let time = 5;
-    setTime(time);
-    let timer = setInterval(() => {
-      time = time - 1;
-      setTime(time);
-      if(time == 0){
-        clearInterval(timer);
-        console.log("tempo esgotado");
-        nextRound();
+    let nextTime = ()=>{
+      if(!finish.current){
+        setTimeout(() => {
+          timeValue.current = timeValue.current - 1;
+          setTime(timeValue.current);
+          if (timeValue.current == 0) {
+            console.log("tempo esgotado");
+            if(!finish.current){ 
+              updateResult(false);
+            }
+          }else{
+            if(roundValue.current<=2 && !finish.current){
+              nextTime();
+            }
+          }
+        }, 1000);
       }
-    }, 1000);
+    }
+    nextTime();
   }
   const nextRound = () =>{
-    console.log("next roud");
-    //Verifica se está no ultimo round
-    console.log("round", round);
-    if(round < 3){
-      roundVal = round + 1;
-      console.log("nextRopund", roundVal);
-      setRound(roundVal);
-      console.log("answer", answer);
-      console.log("number", number);
-      // monta objeto do resultado
-      let result = { number: number};
-      //verifica se o tempo esgotou ou se a pessoa cliou pra enviar
-      if (sendAnswer){
-        result.answer = answer
-      }else{
-        result.answer = null
-      }
-      console.log("result", result);
-      // abastece rounds no context
-      rounds.push(result);
-      console.log("rounds", rounds);
-      context.saveApp({rounds:rounds});
-      //getNumber();
-      //chama a getNumber
+    if(roundValue.current < 2){
+      roundValue.current++;
+      setRound(roundValue.current);
     }else{
-      //Manda pra resultados
+      context.saveApp({result:results.current});
+      finish.current = true;
       navigation.navigate("Result");
     }
   }
+  const updateResult = (resp)=>{
+      let result = { number: Object.assign({}, number)};
+      if (resp) {
+        result.answer = answer;
+      } else {
+        result.answer = null;
+      }
+      setAnswer('');
+      if(!results.current){
+        results.current = [];
+      }
+      results.current.push(result);
+      nextRound();
+  }
   useEffect(()=>{
-    console.log("UseEffect");
-    for(var k in context.app[level]){
-      numbers.push(k);
-    };
+    if(!numbers.current){
+      numbers.current = [];
+    }
+    if(numbers.current.length == 0){
+      startTimer();
+      for(var k in context.app[level]){
+        numbers.current.push(k);
+      };
+      console.log("numbers", numbers);
+    }
     getNumber();
   },[round])
   return (
