@@ -4,14 +4,24 @@ import { Container, Table, Row, Top,View } from "./styles";
 import {ScrollView, TouchableOpacity, FlatList} from 'react-native';
 import { AntDesign } from '@expo/vector-icons'; 
 import { AppContext } from "../../context/app";
+import {global} from '../../services/global';
 export default function Result({navigation}) {
   const context = useContext(AppContext);
-  console.log("Result.js")
-  console.log(context);
-  const numbers = context.app.result;
+  console.log("Result.js");
+  const numbers = context.result;
   const[results, setResults] = useState(numbers);
   const play = (song) =>{
-
+    console.log("song",song);
+    global.playNumber(song.number.current);
+  }
+  const newPlay = ()=>{
+    console.log("NewPlay");
+    navigation.navigate("Game");
+    context.saveRound(1);
+  }
+  const changeLevel = ()=>{
+    navigation.navigate("Level");
+    context.saveRound(1);
   }
   useEffect(()=>{
     console.log(results);
@@ -38,7 +48,7 @@ export default function Result({navigation}) {
                   <Text fS={10}>{item.number.current.n}</Text>
                   <Text fS={10}>{item.answer}</Text>
                   <TouchableOpacity onPress={() => {play(item)}}>
-                    <AntDesign name="sound" size={10} color="#ebe047" />
+                    <AntDesign name="sound" size={20} color="#ebe047" />
                   </TouchableOpacity>
                 </Row>}
               />
@@ -48,14 +58,14 @@ export default function Result({navigation}) {
         <Button.Primary
           mT={10}
           mB={10}
-          onPress={() => navigation.navigate("Game",{update:true})}
+          onPress={() => {newPlay()}}
         >
           <Text>JOGAR NOVAMENTE</Text>
         </Button.Primary>
         <Button.Secondary
           mT={10}
           mB={10}
-          onPress={() => navigation.navigate("Level")}
+          onPress={() => {changeLevel()}}
         >
           <Text>TROCAR DE NÍVEL</Text>
         </Button.Secondary>

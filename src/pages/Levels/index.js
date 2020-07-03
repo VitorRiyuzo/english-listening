@@ -6,8 +6,8 @@ import {AppContext} from "../../context/app";
 import {Switch, Alert} from "react-native";
 import { getNumbers, setLevelFire } from "./services";
 export default function Levels({ navigation }) {
+    console.log("Levels");
     const context = useContext(AppContext);
-    console.log(context);
     const [level, setLevel] = useState({easy:false,medium:false,hard:false});
     const[isLevel, setIslevel] = useState(false);
     const [timer, setTimer] = useState(null);
@@ -16,7 +16,7 @@ export default function Levels({ navigation }) {
     const toggleSwitch = (n) => {
       let newLevel = {easy: false, medium: false, hard: false};
       newLevel[n] = true;
-      context.saveApp({level:n});
+      context.saveLevel(n);
       setLevel(newLevel);
       setIslevel(true);
     }
@@ -27,13 +27,14 @@ export default function Levels({ navigation }) {
         setTimer(timer.toString());
         if (timer == 0) {
           clearInterval(time);
+          setTimer(null);
           navigation.navigate("Game");
         }
       }, 1000);
     }
     const start = ()=>{
       if(isLevel){
-        let level = context.app.level;
+        let level = context.level;
         console.log("level",level);
         setTimer(3);
         if(level){
@@ -42,13 +43,13 @@ export default function Levels({ navigation }) {
           }else{
             load.current = true;
             getNumbers(level).then((resp) => {
-              console.log(resp);
+              console.log("Level: resp",resp);
               load.current = false;
               let newContext = {};
               newContext[level] = resp;
               context.saveApp(newContext);
               startTimer();
-              console.log(context);
+              console.log("Level:context",context);
             });
           }
         }

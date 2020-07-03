@@ -1,25 +1,15 @@
 // auth-service.js
-import { Audio } from "expo-av";
 export const service = {
 	getNumber: (numbers, objNumbers)=>{
 		return new Promise((resolve, reject) => {
 			console.log("service");
 			let indice = Math.floor(numbers.length * Math.random());
-			console.log("numbers", numbers);
-			console.log("indice", indice);
+			console.log("service:numbers", numbers);
+			console.log("service:indice", indice);
+			console.log("service:obsNumber", objNumbers);
 			number = objNumbers[numbers[indice]];
-			console.log("number");
-			console.log(number);
+			console.log("service:number", number);
 			resolve(number);
 		});
-	},
-	playNumber:(number)=>{
-		return new Promise((resolve, reject) => {
-			Audio.Sound.createAsync(
-        { uri: number.url },
-        { shouldPlay: true }
-			);
-			resolve();
-    });
 	}
 }
