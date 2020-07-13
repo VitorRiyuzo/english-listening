@@ -9,7 +9,6 @@ import { AppContext } from '../../../context/app';
 export default function Timer(props) {
 	console.log("Timer");
 	console.log("props",props);
-	const context = useContext(AppContext);
 	const [time, setTime] = useState(10);
 	const valueRef = useRef(10);
 	const timerInterval = useRef(null);
@@ -28,21 +27,18 @@ export default function Timer(props) {
 		//executa sempre que trocar de round
 		//zera o contador do timer em 10
 		//inicia o timer apenas uma vez
-		console.log("Timer:UseEffect")
 		if (props.event == 'start'){
 			startTimer();
 			valueRef.current = 10;
 			setTime(10);
 		}
 		if(props.event == 'stop'){
-			console.log("Timer: Parando o contador");
 			clearInterval(timerInterval.current);
 			setTimeout(() => {
 				valueRef.current = 10;
 				setTime(10);
 			}, 500);
 		}
-		//detecta que finalizou a jogada e zera o timer
 	},[props.event])
 	return (
 		<Text>Tempo: {time}</Text>

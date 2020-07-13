@@ -8,29 +8,13 @@ const AppProvider = ({ children }) => {
         setApp({ ...app, ...data });
         console.log("Context: Depois da mudança", app)
     }
-
-    //LEVEL
     const [level, setLevel] = useState('');
     const saveLevel = data =>{
         console.log("SaveLevel")
         setLevel(data);
     }
-    //TIMER
-    // const [timer, setTimer] = useState('stop');
-    // const saveTimer = data=>{
-    //     console.log("SaveTimer")
-    //     setTimer(data);
-    // }
-    //ROUND
-    // const [round, setRound] = useState(1);
-    // const saveRound = data =>{
-    //     console.log("SaveRound")
-    //     setRound(data);
-    // }
-    //RESULT
     const [result, setResult]= useState([]);
     const saveResult = data =>{
-        //setResult(result => [...result, data]);
         setResult(data);
     }
     const [status, setStatus] = useState("stop");

@@ -5,10 +5,9 @@ import {Container, Level,Logo, Img, Timer} from "./styles";
 import {AppContext} from "../../context/app";
 import {Switch, Alert} from "react-native";
 import { getNumbers, setLevelFire } from "./services";
+import * as Permissions from "expo-permissions";
 export default function Levels({ navigation }) {
-    console.log("Levels:Controller");
     const context = useContext(AppContext);
-    console.log("Level:context", context);
     const [level, setLevel] = useState({easy:false,medium:false,hard:false});
     const[isLevel, setIslevel] = useState(false);
     const [timer, setTimer] = useState(null);
@@ -38,33 +37,28 @@ export default function Levels({ navigation }) {
       }, 1000);
     }
     const start = ()=>{
-      // Clica em começar
-      //Verifica se selecionou algum level
-      console.log("Level:Começar");
-      if(isLevel){
-        console.log("Level:Tem level");
-        //Verifica se já existe uma lista de músicas no context
-        if (context.app[context.level]){
-          console.log("Level: tem lista");
-          startTimer();
-        }else{
-          console.log("Level:Não tem lista", context.level)
-          //Não tem a lista, baixa da API e armazena no context
-          //inicia Timer(sem iniciar a contagem) e o load para carregar os números
-          load.current = true;
-          setTimer("3");
-          getNumbers(context.level).then((resp) => {
-            console.log("Level:Get numbers já pegou a lista");
-            console.log("Level: resp",resp);
-            load.current = false;
-            let numbers ={};
-            numbers[context.level]= resp;
-            context.saveApp(numbers);
-            //Inicia o Timer
+      getPermissionAsync(()=>{
+        // Clica em começar
+        //Verifica se selecionou algum level
+        if(isLevel){
+          //Verifica se já existe uma lista de músicas no context
+          if (context.app[context.level]){
             startTimer();
-          });
-        }
-      }else{
+          }else{
+            //Não tem a lista, baixa da API e armazena no context
+            //inicia Timer(sem iniciar a contagem) e o load para carregar os números
+            load.current = true;
+            setTimer("3");
+            getNumbers(context.level).then((resp) => {
+              load.current = false;
+              let numbers ={};
+              numbers[context.level]= resp;
+              context.saveApp(numbers);
+              //Inicia o Timer
+              startTimer();
+            });
+          }
+        }else{
           Alert.alert(
             "Selecione um nível",
             "Você precisa escolher um nível",
@@ -73,6 +67,26 @@ export default function Levels({ navigation }) {
             ],
             { cancelable: false }
           );
+        }
+      });
+    }
+    async function getPermissionAsync(callback) {
+      // permissions returns only for location permissions on iOS and under certain conditions, see Permissions.LOCATION
+      const { status, permissions } = await Permissions.askAsync(
+        Permissions.AUDIO_RECORDING
+      );
+      if (status === "granted") {
+        callback();
+        return AUDIO_RECORDING.getCurrentPositionAsync({
+          enableHighAccuracy: true,
+        });
+      } else {
+        Alert.alert(
+          "Permissão negada",
+          "Você precisa dar permissão para usar o áudio do dispositivo",
+          [{ text: "OK", onPress: () => {} }],
+          { cancelable: false }
+        );
       }
     }
     return (

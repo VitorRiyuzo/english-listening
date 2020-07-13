@@ -7,7 +7,9 @@ export const global = {
                 { uri: number.url },
                 { shouldPlay: true }
             );
-            resolve();
+            setTimeout(() => {
+                resolve();
+            }, 1000);
         });
     }
 }

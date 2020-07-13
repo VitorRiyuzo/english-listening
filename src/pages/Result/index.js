@@ -9,24 +9,16 @@ export default function Result({navigation}) {
   const context = useContext(AppContext);
   console.log("Result.js");
   const numbers = context.result;
-  const[results, setResults] = useState(numbers);
   const play = (song) =>{
-    console.log("song",song);
     global.playNumber(song.number.current);
   }
   const newPlay = ()=>{
-    console.log("NewPlay");
     navigation.navigate("Game");
     context.saveStatus("start");
   }
   const changeLevel = ()=>{
-    console.log("Change level")
     navigation.navigate("Level");
   }
-  useEffect(()=>{
-    console.log(results);
-  },[])
- 
   return (
     <Background resizeMode="cover" source={require("../../assets/img/bg.png")}>
       <Container>
@@ -38,15 +30,15 @@ export default function Result({navigation}) {
           <ScrollView>
             <Table>
               <Row>
-                <Text fS={10}>NÚMERO</Text>
-                <Text fS={10}>RESPOSTA</Text>
-                <Text fS={10}>ÁUDIO</Text>
+                <Text fS={12}>NÚMERO</Text>
+                <Text fS={12}>RESPOSTA</Text>
+                <Text fS={12}>ÁUDIO</Text>
               </Row>
               <FlatList
                 data={numbers}
                 renderItem={({ item }) => <Row>
-                  <Text fS={10}>{item.number.current.n}</Text>
-                  <Text fS={10}>{item.answer}</Text>
+                  <Text fS={12} color={item.color}>{item.number.current.n}</Text>
+                  <Text fS={12} color={item.color}>{item.answer}</Text>
                   <TouchableOpacity onPress={() => {play(item)}}>
                     <AntDesign name="sound" size={20} color="#ebe047" />
                   </TouchableOpacity>

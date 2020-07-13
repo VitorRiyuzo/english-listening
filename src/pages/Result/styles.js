@@ -19,7 +19,7 @@ export const Row = styled.View`
     flex-direction:row;
     justify-content:space-between;
     border-bottom-color:white;
-    padding:10px;
+    padding:5px;
     border-width:1px;
 `;
 export const View = styled.View`
