@@ -28,25 +28,22 @@ export default function Timer(props) {
 		//executa sempre que trocar de round
 		//zera o contador do timer em 10
 		//inicia o timer apenas uma vez
-		if (context.timer){
-			console.log("Timer:UseEffect")
-			console.log("Timer: context timer", context.timer);
-			if (context.timer == 'start'){
-				startTimer();
+		console.log("Timer:UseEffect")
+		if (props.event == 'start'){
+			startTimer();
+			valueRef.current = 10;
+			setTime(10);
+		}
+		if(props.event == 'stop'){
+			console.log("Timer: Parando o contador");
+			clearInterval(timerInterval.current);
+			setTimeout(() => {
 				valueRef.current = 10;
 				setTime(10);
-			}
-			if(context.timer == 'stop'){
-				console.log("Timer: Parando o contador");
-				clearInterval(timerInterval.current);
-				setTimeout(() => {
-					valueRef.current = 10;
-					setTime(10);
-				}, 500);
-			}
+			}, 500);
 		}
 		//detecta que finalizou a jogada e zera o timer
-	},[context.timer])
+	},[props.event])
 	return (
 		<Text>Tempo: {time}</Text>
 	)

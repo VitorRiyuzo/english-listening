@@ -17,11 +17,11 @@ export default function Result({navigation}) {
   const newPlay = ()=>{
     console.log("NewPlay");
     navigation.navigate("Game");
-    context.saveRound(1);
+    context.saveStatus("start");
   }
   const changeLevel = ()=>{
+    console.log("Change level")
     navigation.navigate("Level");
-    context.saveRound(1);
   }
   useEffect(()=>{
     console.log(results);

@@ -15,6 +15,8 @@ export default function Game({route, navigation}) {
   const context = useContext(AppContext);
   const answerValue = useRef("");
   const[answer, setAnswer] = useState('');
+  const[timer, setTimer] = useState('stop');
+  const[round, setRound] = useState(1);
   const level = context.level;
   const results = useRef(null);
   const number = useRef(null);
@@ -25,6 +27,7 @@ export default function Game({route, navigation}) {
   }
   const keyCallback = (value)=>{
     if (value == 'back') {
+      //Tentar alterar apenas o state answer
       answerValue.current = answerValue.current.slice(0, -1)
       setAnswer(answerValue.current);
     } else if(value == 'send') {
@@ -50,8 +53,8 @@ export default function Game({route, navigation}) {
       play();
       setTimeout(() => {
         console.log("Game: timer start")
-        context.saveTimer('start');
-      }, 1000);
+        setTimer('start');
+      }, 2000);
     });
   }
   const updateResult = (resp)=>{
@@ -72,44 +75,62 @@ export default function Game({route, navigation}) {
     results.current.push(result);
     //avança o round e para o timer
     console.log("Game: timer stop");
-    console.log("context valor timer", context.timer);
-    context.saveTimer('stop');
-    console.log("context valor timer depois de atualizar", context.timer);
-    if (context.round < 2){
-      context.saveRound(context.round + 1);
-      console.log("Game: avançou o round");
+    console.log("context valor timer", timer);
+    setTimer('stop');
+    console.log("context valor timer depois de atualizar", timer);
+    if (round < 2){
+      setRound(round+1);
+      console.log("Game: avançou o round", round);
+      getNumber();
     }else{
       console.log("Game: Finalizou, results", results.current);
       context.saveResult( results.current );
       results.current = null;
+      setRound(1);
       navigation.navigate("Result");
+      context.saveStatus("stop");
     }
   }
-  useEffect(()=>{
-    if (context.round){
-      console.log("Game: UserEffect")
-      console.log("Game: context round", context.round);
-      //Verifica se é o ultimo round e manda zerar
-      
-      if(!numbers.current){
-        console.log("Game: numero vazio");
-        numbers.current = [];
-      }
-      if(numbers.current.length == 0){
-        for (var k in context.app[level]){
-          numbers.current.push(k);
-        };
-        console.log("Game: numbers", numbers);
-      }
-      getNumber();
+  if(context.status == 'start'){
+    context.saveStatus("playing");
+    if(!numbers.current){
+      console.log("Game: numero vazio");
+      numbers.current = [];
     }
-  }, [context.round])
+    if(numbers.current.length == 0){
+      for (var k in context.app[level]){
+        numbers.current.push(k);
+      };
+      console.log("Game: numbers", numbers);
+    }
+    getNumber();
+  }
+  // useEffect(()=>{
+  //   if (context.round){
+  //     console.log("Game: UserEffect")
+  //     console.log("Game: context round", context.round);
+  //     //Verifica se é o ultimo round e manda zerar
+      
+  //     if(!numbers.current){
+  //       console.log("Game: numero vazio");
+  //       numbers.current = [];
+  //     }
+  //     if(numbers.current.length == 0){
+  //       for (var k in context.app[level]){
+  //         numbers.current.push(k);
+  //       };
+  //       console.log("Game: numbers", numbers);
+  //     }
+  //     getNumber();
+  //   }
+  // }, [context.round])
   return (
     <Background resizeMode="cover" source={require("../../assets/img/bg.png")}>
       <Container>
         <Top>
-          <Round callback={roundCallback}></Round>
-          <Timer callback={timerCallback}></Timer>
+          {/* <Round callback={roundCallback}></Round> */}
+          <Text>{round} / 10</Text>
+          <Timer callback={timerCallback} event={timer}></Timer>
         </Top>
         <TouchableOpacity onPress={() => { play()}}>
           <AntDesign name="sound" size={30} color="#ebe047" />

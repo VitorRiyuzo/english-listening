@@ -16,24 +16,28 @@ const AppProvider = ({ children }) => {
         setLevel(data);
     }
     //TIMER
-    const [timer, setTimer] = useState('stop');
-    const saveTimer = data=>{
-        console.log("SaveTimer")
-        setTimer(data);
-    }
+    // const [timer, setTimer] = useState('stop');
+    // const saveTimer = data=>{
+    //     console.log("SaveTimer")
+    //     setTimer(data);
+    // }
     //ROUND
-    const [round, setRound] = useState(1);
-    const saveRound = data =>{
-        console.log("SaveRound")
-        setRound(data);
-    }
+    // const [round, setRound] = useState(1);
+    // const saveRound = data =>{
+    //     console.log("SaveRound")
+    //     setRound(data);
+    // }
     //RESULT
     const [result, setResult]= useState([]);
     const saveResult = data =>{
         //setResult(result => [...result, data]);
         setResult(data);
     }
-    const providers = {app, saveApp, level, saveLevel, timer, saveTimer, round, saveRound, result, saveResult}
+    const [status, setStatus] = useState("stop");
+    const saveStatus = data => {
+        setStatus(data);
+    }
+    const providers = {app, saveApp, level, saveLevel, result, saveResult, status, saveStatus}
     return (
         <AppContext.Provider value={providers}>
             {children}

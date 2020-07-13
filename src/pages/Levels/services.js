@@ -5,6 +5,6 @@ export const getNumbers = (level) => {
         firebase.database().ref(level).once('value', (snapshot)=>{
             //console.log(snapshot.val());
             resolve(snapshot.val());
-        })
+        } )
     })
 };

@@ -6,52 +6,63 @@ import {AppContext} from "../../context/app";
 import {Switch, Alert} from "react-native";
 import { getNumbers, setLevelFire } from "./services";
 export default function Levels({ navigation }) {
-    console.log("Levels");
+    console.log("Levels:Controller");
     const context = useContext(AppContext);
+    console.log("Level:context", context);
     const [level, setLevel] = useState({easy:false,medium:false,hard:false});
     const[isLevel, setIslevel] = useState(false);
     const [timer, setTimer] = useState(null);
     const load = useRef(false);
 
     const toggleSwitch = (n) => {
+      //Switch escolhe um level e armazena na state
       let newLevel = {easy: false, medium: false, hard: false};
       newLevel[n] = true;
-      context.saveLevel(n);
       setLevel(newLevel);
+      context.saveLevel(n);
       setIslevel(true);
     }
     const startTimer = ()=>{
+      //inicia o contador para ir para a próxima tela
       let timer = 3;
       let time = setInterval(() => {
         timer = timer - 1;
         setTimer(timer.toString());
         if (timer == 0) {
+          //Zerou, inicia o jogo
           clearInterval(time);
           setTimer(null);
+          context.saveStatus("start");
           navigation.navigate("Game");
         }
       }, 1000);
     }
     const start = ()=>{
+      // Clica em começar
+      //Verifica se selecionou algum level
+      console.log("Level:Começar");
       if(isLevel){
-        let level = context.level;
-        console.log("level",level);
-        setTimer(3);
-        if(level){
-          if (context.app[level]){
+        console.log("Level:Tem level");
+        //Verifica se já existe uma lista de músicas no context
+        if (context.app[context.level]){
+          console.log("Level: tem lista");
+          startTimer();
+        }else{
+          console.log("Level:Não tem lista", context.level)
+          //Não tem a lista, baixa da API e armazena no context
+          //inicia Timer(sem iniciar a contagem) e o load para carregar os números
+          load.current = true;
+          setTimer("3");
+          getNumbers(context.level).then((resp) => {
+            console.log("Level:Get numbers já pegou a lista");
+            console.log("Level: resp",resp);
+            load.current = false;
+            let numbers ={};
+            numbers[context.level]= resp;
+            context.saveApp(numbers);
+            //Inicia o Timer
             startTimer();
-          }else{
-            load.current = true;
-            getNumbers(level).then((resp) => {
-              console.log("Level: resp",resp);
-              load.current = false;
-              let newContext = {};
-              newContext[level] = resp;
-              context.saveApp(newContext);
-              startTimer();
-              console.log("Level:context",context);
-            });
-          }
+          });
         }
       }else{
           Alert.alert(
@@ -147,12 +158,3 @@ export default function Levels({ navigation }) {
       </Background>
     );
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#fff",
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-// });
