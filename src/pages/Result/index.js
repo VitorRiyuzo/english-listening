@@ -9,6 +9,22 @@ export default function Result({navigation}) {
   const context = useContext(AppContext);
   console.log("Result.js");
   const numbers = context.result;
+  const[level,setLevel]= useState("");
+  useEffect(()=>{
+    switch (context.level) {
+      case "easy":
+        setLevel("Fácil");
+        break;
+      case "medium":
+        setLevel("Médio");
+        break;
+      case "hard":
+        setLevel("Difícil");
+        break;
+      default:
+        break;
+    }
+  },[])
   const play = (song) =>{
     global.playNumber(song.number.current);
   }
@@ -24,7 +40,7 @@ export default function Result({navigation}) {
       <Container>
         <Top>
           <Text fS={26}>SCORE</Text>
-          <Text>FÁCIL</Text>
+          <Text>{level}</Text>
         </Top>
         <View>
           <ScrollView>

@@ -18,14 +18,10 @@ export const Logo = styled.View`
   opacity:0.7;
 `;
 export const Timer = styled.View`
-  position:absolute;
-  height:105%;
-  padding-top:50%;
-  width:100%;
-  align-items:center;
-  justify-content:space-around;
-  background:black;
-  text-align:center;
-  z-index:1000;
-  opacity:0.9;
-`
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  padding-top:40%;
+  background: black;
+  text-align: center;
+`;

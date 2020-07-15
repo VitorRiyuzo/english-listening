@@ -1,11 +1,10 @@
 {
   "expo": {
-    "name": "english-listening",
+    "name": "Numerics",
     "slug": "english-listening",
     "platforms": [
       "ios",
-      "android",
-      "web"
+      "android"
     ],
     "version": "1.0.0",
     "orientation": "portrait",
@@ -23,6 +22,9 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android":{
+      "package":"com.vriyuzo.numerics"
     }
   }
 }
